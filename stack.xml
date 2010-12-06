@@ -1,0 +1,9 @@
+<stack>
+  <description brief="misc_umd">Uncategorized packages from UMD</description>
+  <author>Robotics@Maryland</author>
+  <license>BSD</license>
+  <review status="unreviewed" notes=""/>
+  <url>http://ros.org/wiki/misc_umd</url>
+  <depend stack="ros" />
+
+</stack>

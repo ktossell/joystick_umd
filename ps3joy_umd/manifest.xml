@@ -1,0 +1,25 @@
+<package>
+  <description brief="Playstation 3 SIXAXIS or DUAL SHOCK 3 joystick driver.">
+    Local fork of ps3joy driver. Adds partial support for Bluetooth v1.
+    Adds controller shutdown on PS3 button, computer shutdown upon press of
+    all four top buttons, LED control from ROS [this ps3joy.py is a ROS node]
+    and other details.
+
+  </description>
+  <author>ps3joy: Blaise Gassend and pascal@pabr.org (modified by ktossell@umd.edu)</author>
+  <license>BSD</license>
+
+  <review status="experimental" notes=""/>
+  <depend package="roscpp"/>
+  <depend package="joy"/>
+  <url>http://www.ros.org/wiki/ps3joy_umd</url>
+  <rosdep name="libusb"/>
+  <rosdep name="joystick"/>
+  <rosdep name="bluez"/>
+  <rosdep name="python-bluez"/>
+  <platform os="ubuntu" version="9.04"/>
+  <platform os="ubuntu" version="9.10"/>
+  <platform os="ubuntu" version="10.04"/>
+</package>
+
+
