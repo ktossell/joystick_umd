@@ -158,14 +158,14 @@ class uinputjoy:
         wrote_new = False
         for i in range(0, len(value)):
             if i >= len(self.value) or value[i] != self.value[i]:
-	        #print "%d: %d" % (i, value[i])
+                #print "%d: %d" % (i, value[i])
                 os.write(self.file, struct.pack(input_event, th, tl, self.type[i], self.code[i], value[i]))
                 wrote_new = True
-	# Always write something so later drivers don't time out
-	if False and not wrote_new:
-	    self.last_count += 1
-	    if self.last_count & 127 == 0:
-	        os.write(self.file, struct.pack(input_event, th, tl, self.type[0], self.code[0], self.last_count))
+        # Always write something so later drivers don't time out
+        if False and not wrote_new:
+            self.last_count += 1
+            if self.last_count & 127 == 0:
+                os.write(self.file, struct.pack(input_event, th, tl, self.type[0], self.code[0], self.last_count))
         self.value = list(value)
 
 class BadJoystickException(Exception):
@@ -202,7 +202,7 @@ class decoder:
         self.fullstop() # Probably useless because of uinput startup bug
         self.outlen = len(buttons) + len(axes)
         self.inactivity_timeout = inactivity_timeout
-	self.warned_bt1 = False
+        self.warned_bt1 = False
         self.downed = False
 
     step_active = 1
@@ -212,10 +212,10 @@ class decoder:
     def step(self, rawdata): # Returns true if the packet was legal
         if len(rawdata) == 50 or len(rawdata) == 13:
             if len(rawdata) == 13:
-	        if not self.warned_bt1:
-	            print >> sys.stderr, "Your bluetooth adapter is not supported, but it will report button states (on/off) and the 8 main axes."
-		    self.warned_bt1 = True
-	        joy_coding = "!1B2x3B1x4B2x"
+                if not self.warned_bt1:
+                    print >> sys.stderr, "Your bluetooth adapter is not supported, but it will report button states (on/off) and the 8 main axes."
+                    self.warned_bt1 = True
+                joy_coding = "!1B2x3B1x4B2x"
             else:
                 joy_coding = "!1B2x3B1x4B4x12B15x4H"
             data = list(struct.unpack(joy_coding, rawdata))
@@ -233,11 +233,14 @@ class decoder:
             axis_motion = [abs(out[17:][i] - self.axmid[i]) > 20 for i in range(0,len(out)-17-4)]
                                                                        # 17 buttons, 4 inertial sensors
             if out[16] == 1:
-              os.system("hcitool dc 00:19:C1:C6:2B:B1 > /dev/null 2>&1")
+                os.system("hcitool con | grep ACL | awk '{print(\"/usr/bin/hcitool dc\", $3) | \"/bin/bash\" }'")
             if self.downed == False and out[10] == 1 and out[11] == 1 and out[1] == 1 and out[2] == 1:
-              print "SHUTDOWN NOW"
-              os.system("/sbin/shutdown -h now")
-              self.downed = True
+                # This hasn't been used in a while, and it's kind of dangerous. Replaced with something
+                # that requires the user to demonstrate seriousness.
+                pass
+                #print "SHUTDOWN NOW"
+                #os.system("/sbin/shutdown -h now")
+                #self.downed = True
             if any(out[0:17]) or any(axis_motion):
                 return self.step_active
             return self.step_idle
@@ -276,9 +279,9 @@ class decoder:
                     if False and not activated:
                         print "Connection activated"
                         activated = True
-			setleds = [0x52,
-			           0x01,
-		                   0x00, 0x00, 0x00, 0x00, 0x00,	# rumble values
+                        setleds = [0x52,
+                                   0x01,
+                                   0x00, 0x00, 0x00, 0x00, 0x00,	# rumble values
                                    0x00, 0x00, 0x00, 0x00, 0x14,	# 0x10=LED1 .. 0x02=LED4
                                    0xff, 0x27, 0x10, 0x00, 0x32,	# LED 4
                                    0xff, 0x27, 0x10, 0x00, 0x32,	# LED 3
@@ -344,9 +347,9 @@ class connection_manager:
         self.listen(intr_sock, ctrl_sock)
 
     def listen_bluetooth(self):
-	intr_sock = self.prepare_bluetooth_socket(L2CAP_PSM_HIDP_INTR)
-	ctrl_sock = self.prepare_bluetooth_socket(L2CAP_PSM_HIDP_CTRL)
-	self.listen(intr_sock, ctrl_sock)
+      intr_sock = self.prepare_bluetooth_socket(L2CAP_PSM_HIDP_INTR)
+      ctrl_sock = self.prepare_bluetooth_socket(L2CAP_PSM_HIDP_CTRL)
+      self.listen(intr_sock, ctrl_sock)
 
     def listen(self, intr_sock, ctrl_sock):
         global last_ctrl
@@ -423,7 +426,7 @@ if __name__ == "__main__":
             print >> sys.stderr, "ps3joy.py must be run as root."
             quit(1)
         os.system("/etc/init.d/bluetooth stop > /dev/null 2>&1")
-	os.system("hid2hci > /dev/null 2>&1")
+        os.system("hid2hci > /dev/null 2>&1")
         while os.system("hciconfig hci0 > /dev/null 2>&1") != 0:
             print >> sys.stderr,  "No bluetooth dongle found or bluez rosdep not installed. Will retry in 5 seconds."
             time.sleep(5)
